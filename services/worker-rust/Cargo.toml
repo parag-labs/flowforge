@@ -1,0 +1,19 @@
+[package]
+name = "flowforge-worker"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "FlowForge worker — Rust"
+
+[[bin]]
+name = "worker"
+path = "src/main.rs"
+
+[lib]
+name = "flowforge_worker"
+path = "src/lib.rs"
+
+[dependencies]
+
+[dev-dependencies]
+serde_json = "1"
