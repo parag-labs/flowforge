@@ -1,0 +1,270 @@
+:root {
+  --bg: #0a0b10;
+  --panel: #12141c;
+  --panel-2: #1a1d27;
+  --border: #262a38;
+  --text: #e7e9f0;
+  --muted: #969ab0;
+  --accent: #5b8cff;
+  --pending: #64748b;
+  --leased: #f59e0b;
+  --done: #22c55e;
+  --dead: #ef4444;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  background:
+    radial-gradient(800px 480px at 88% -8%, rgba(91, 140, 255, 0.16), transparent 60%),
+    var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", Inter, system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 40px 24px 60px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.pulse {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 14px 3px rgba(91, 140, 255, 0.7);
+}
+
+.badge {
+  margin-left: 8px;
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  letter-spacing: 1px;
+}
+
+.badge.on {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.badge.off {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+h1 {
+  font-size: 28px;
+  margin: 14px 0 8px;
+}
+
+.lede {
+  color: var(--muted);
+  max-width: 640px;
+  line-height: 1.5;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.stat {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  border-left-width: 3px;
+}
+
+.stat-num {
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.s-pending {
+  border-left-color: var(--pending);
+}
+.s-leased {
+  border-left-color: var(--leased);
+}
+.s-done {
+  border-left-color: var(--done);
+}
+.s-dead {
+  border-left-color: var(--dead);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.controls input {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.controls button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 12px;
+  flex: 1;
+  min-width: 220px;
+}
+
+.empty {
+  color: var(--muted);
+  background: var(--panel);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+}
+
+.workflows {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.wf {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.wf-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+
+.wf-id {
+  font-weight: 600;
+  font-family: ui-monospace, monospace;
+}
+
+.wf-progress {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.timeline {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.node {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-top-width: 3px;
+  border-radius: 8px;
+  padding: 9px 12px;
+  min-width: 108px;
+  position: relative;
+}
+
+.node-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.node-state {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.node-attempt {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 10px;
+  color: var(--leased);
+}
+
+.node.s-pending {
+  border-top-color: var(--pending);
+}
+.node.s-leased {
+  border-top-color: var(--leased);
+}
+.node.s-done {
+  border-top-color: var(--done);
+}
+.node.s-dead {
+  border-top-color: var(--dead);
+}
+
+footer {
+  margin-top: 36px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
