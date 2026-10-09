@@ -21,6 +21,10 @@ flowchart TD
   ST --> API
 ```
 
+![architecture](docs/diagrams/architecture.png)
+
+*Architecture at a glance — the task lease lifecycle (claim, complete once, recover a crash by lease expiry, else dead-letter) and the runtime that drives it. Source: [`docs/diagrams/architecture.svg`](docs/diagrams/architecture.svg).*
+
 ## Polyglot by design
 
 The engine owns durable state; **workers speak one shared contract** and come in six
