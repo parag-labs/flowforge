@@ -1,0 +1,140 @@
+# The claim in the README is that six independent workers agree on the contract and
+# that a worker crash is survivable. Both are checked here on every push, so the
+# claim either holds or the build goes red.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # The golden vectors are generated, not hand-written. If someone edits a constant
+  # in generate.py without regenerating, every worker would still agree with a stale
+  # file and the suite would pass for the wrong reason.
+  contracts:
+    name: contract vectors are current
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python contracts/generate.py
+      - name: vectors.json matches generate.py
+        run: git diff --exit-code contracts/vectors.json
+
+  engine:
+    name: engine (Go)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+          cache: false
+      - run: go vet ./...
+        working-directory: services/engine-go
+      - run: go test ./... -race
+        working-directory: services/engine-go
+
+  conformance-go:
+    name: conformance · Go
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+          cache: false
+      - run: go build ./...
+        working-directory: services/worker-go
+
+  conformance-python:
+    name: conformance · Python
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pytest
+      - run: pytest
+        working-directory: services/worker-python
+
+  conformance-rust:
+    name: conformance · Rust
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: services/worker-rust
+      - run: cargo test
+        working-directory: services/worker-rust
+
+  conformance-csharp:
+    name: conformance · C#
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - run: dotnet test tests/Worker.Tests.csproj --nologo
+        working-directory: services/worker-csharp
+
+  conformance-java:
+    name: conformance · Java
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+      - run: mvn -B test
+        working-directory: services/worker-java
+
+  conformance-typescript:
+    name: conformance · TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: services/worker-typescript/package-lock.json
+      - run: npm ci
+        working-directory: services/worker-typescript
+      - run: npm run lint
+        working-directory: services/worker-typescript
+      - run: npm test
+        working-directory: services/worker-typescript
+
+  # The signature scenario: a worker claims a money-moving task, dies before
+  # completing it, and the card must not be charged twice. Exits non-zero on failure.
+  chaos:
+    name: chaos · worker crashes mid-task
+    runs-on: ubuntu-latest
+    needs: engine
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+          cache: false
+      - run: go run ./crash_recovery
+        working-directory: chaos-tests
